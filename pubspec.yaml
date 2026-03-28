@@ -1,0 +1,50 @@
+name: msg
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase packages
+  firebase_core: ^4.6.0
+  firebase_auth: ^6.3.0
+  cloud_firestore: ^6.2.0
+  firebase_storage: ^13.2.0
+
+  # UI & media
+  image_picker: ^1.0.7
+  lottie: ^3.3.2
+  cloudinary_public: ^0.23.1
+  record: ^6.2.0
+  encrypt: ^5.0.1
+  emoji_picker_flutter: ^4.4.0
+  path_provider: ^2.1.2
+  just_audio: ^0.10.5
+  google_fonts: ^8.0.2
+  animated_text_kit: ^4.2.2
+  audio_waveforms: ^2.0.2
+  scrollable_positioned_list: ^0.3.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1   # ✅ App icon package
+
+# 🔥 App Icon Configuration
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/chat_animation.json
+    - assets/logo.png   # ✅ Add logo image
