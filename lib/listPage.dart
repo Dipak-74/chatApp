@@ -17,6 +17,52 @@ class _FriendsListPageState extends State<FriendsListPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // ✅ DELETE FUNCTION
+  void deleteFriend(String friendUid) async {
+    final myUid = _auth.currentUser!.uid;
+
+    await _firestore
+        .collection('friends')
+        .doc(myUid)
+        .collection('list')
+        .doc(friendUid)
+        .delete();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Friend Deleted ❌")),
+    );
+  }
+
+  // ✅ DELETE DIALOG
+  void showDeleteDialog(String friendUid, String name) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          title: const Text("Delete Friend",
+              style: TextStyle(color: Colors.white)),
+          content: Text("Remove $name from your friends?",
+              style: const TextStyle(color: Colors.white70)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                deleteFriend(friendUid);
+                Navigator.pop(context);
+              },
+              child: const Text("Delete",
+                  style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Stream<List<Map<String, dynamic>>> getRegisteredUsers() {
     final myUid = _auth.currentUser!.uid;
     return _firestore
@@ -207,7 +253,6 @@ class _FriendsListPageState extends State<FriendsListPage> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         title: const Text("ChatApp",
-        
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 255, 255, 255),
@@ -229,12 +274,10 @@ class _FriendsListPageState extends State<FriendsListPage> {
           children: [
             const SizedBox(height: 120),
 
-            // 🔍 Search Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(30),
@@ -243,11 +286,9 @@ class _FriendsListPageState extends State<FriendsListPage> {
                   controller: searchController,
                   style: const TextStyle(color: Colors.white),
                   decoration: const InputDecoration(
-                    icon: Icon(Icons.search,
-                        color: Colors.white70),
+                    icon: Icon(Icons.search, color: Colors.white70),
                     hintText: "Search chats",
-                    hintStyle:
-                        TextStyle(color: Colors.white54),
+                    hintStyle: TextStyle(color: Colors.white54),
                     border: InputBorder.none,
                   ),
                   onChanged: (_) => setState(() {}),
@@ -257,7 +298,6 @@ class _FriendsListPageState extends State<FriendsListPage> {
 
             const SizedBox(height: 10),
 
-            // 💬 LIST
             Expanded(
               child: StreamBuilder<List<Map<String, dynamic>>>(
                 stream: getRegisteredUsers(),
@@ -270,8 +310,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
                   var users = snapshot.data!;
 
                   return ListView.builder(
-                    padding:
-                        const EdgeInsets.only(bottom: 80),
+                    padding: const EdgeInsets.only(bottom: 80),
                     itemCount: users.length,
                     itemBuilder: (context, index) {
                       final user = users[index];
@@ -280,8 +319,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
                         margin: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(18),
                           gradient: LinearGradient(
                             colors: [
                               Colors.white.withOpacity(0.08),
@@ -296,12 +334,17 @@ class _FriendsListPageState extends State<FriendsListPage> {
                               MaterialPageRoute(
                                 builder: (_) => ChatScreen(
                                   friendUid: user['uid'],
-                                  friendNumber:
-                                      user['number'],
+                                  friendNumber: user['number'],
                                 ),
                               ),
                             );
                           },
+
+                          // ✅ LONG PRESS DELETE
+                          onLongPress: () {
+                            showDeleteDialog(user['uid'], user['name']);
+                          },
+
                           leading: Stack(
                             children: [
                               CircleAvatar(
@@ -328,8 +371,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
                                     height: 10,
                                     decoration:
                                         const BoxDecoration(
-                                      color:
-                                          Colors.greenAccent,
+                                      color: Colors.greenAccent,
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -339,19 +381,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
                           title: Text(user['name'],
                               style: const TextStyle(
                                   color: Colors.white,
-                                  fontWeight:
-                                      FontWeight.bold)),
-                          // subtitle: Text(
-                          //   user['online']
-                          //       ? "Online"
-                          //       : "Last seen ${formatLastSeen(user['lastSeen'])}",
-                          //   style: const TextStyle(
-                          //       color: Colors.white60),
-                          // ),
-                          // trailing: Text(user['number'],
-                          //     style: const TextStyle(
-                          //         color: Colors.white54,
-                          //         fontSize: 11)),
+                                  fontWeight: FontWeight.bold)),
                         ),
                       );
                     },
